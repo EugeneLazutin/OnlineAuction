@@ -1,0 +1,80 @@
+﻿@model OnlineAuction.Models.WinLotViewModel
+
+@{
+    ViewBag.Title = "Add lot to auction - " + Model.Lot.Name;
+
+    string img;
+    if (Model.Lot.Image == null)
+    {
+        img = "/Content/no_image.jpg";
+    }
+    else
+    {
+        img = $"data:image/gif;base64,{Convert.ToBase64String(Model.Lot.Image)}";
+    }
+}
+
+<h2>Add lot to auction - @Model.Lot.Name</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(model => model.StartTime, new { @data_bind = "value: startDate" })
+    @Html.HiddenFor(model => model.EndTime, new { @data_bind = "value: endDate" })
+    @Html.HiddenFor(model => model.LotId)
+
+    <div class="thumbnail col-md-4 col-centered">
+        <h2 class="align-centered">@Html.DisplayFor(model => model.Lot.Name)</h2>
+        <img src="@img" class="img-responsive img-rounded" />
+        <div class="caption">
+
+            <p>@Html.DisplayFor(model => model.Lot.Description)</p>
+            <div class="row">
+                <h3 class="col-md-6 align-centered">@Html.DisplayNameFor(model => model.Lot.Price)</h3>
+                <h3 class="col-md-6 align-centered">@Html.DisplayNameFor(model => model.Lot.Time)</h3>
+            </div>
+            <div class="row">
+                <span class="col-md-6 align-centered">@Html.DisplayFor(model => model.Lot.Price)$</span>
+                <span class="col-md-6 align-centered">@Html.DisplayFor(model => model.Lot.Time)m</span>
+            </div>
+            <div class="row">
+                <h3 class="align-centered">Start date:</h3>
+            </div>
+            <div class="row">
+                <span class="col-md-6 align-centered"><input type="date" id="date" data-bind="event: {change: onChange}"/></span>
+                <span class="col-md-6 align-centered"><input type="time" id="time" data-bind="event: {change: onChange}"/></span>
+            </div>
+            <label id="msg" class="text-danger"></label>
+            <div class="row">
+                <span class="col-md-6 align-centered">@Html.ValidationMessageFor(model => model.StartTime, "", new {@class = "text-danger"})</span>
+            </div>
+            <div class="row">
+                <h4 class="col-md-6 align-centered">End date:</h4>
+                <h4 class="col-md-6 align-centered" data-bind="text: endDate"></h4>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="btn-group">
+            <a href="@Url.Action("Index")" class="btn btn-info">
+                Back to list
+                <span class="glyphicon glyphicon-backward"></span>
+            </a>
+            <input type="submit" value="Add" class="btn btn-success"/>
+
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script>
+        window.model = {};
+        window.model.time = @Model.Lot.Time;
+    </script>
+    @Scripts.Render("~/bundles/dateHelper")
+    @Scripts.Render("~/bundles/jqueryval")
+}

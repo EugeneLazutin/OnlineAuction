@@ -1,0 +1,88 @@
+﻿@using System.Globalization
+@model OnlineAuction.Models.WinLotViewModel
+
+@{
+    ViewBag.Title = "Lot - " + Model.Lot.Name;
+
+    string img;
+    string dateFormat = "yyyy-MM-dd HH:mm";
+    var price = Model.Lot.Price;
+
+    if (Model.Lot.Image == null)
+    {
+        img = "/Content/no_image.jpg";
+    }
+    else
+    {
+        img = $"data:image/gif;base64,{Convert.ToBase64String(Model.Lot.Image)}";
+    }
+
+    if (Model.LastBet != null)
+    {
+        price = Model.LastBet.Value;
+    }
+}
+
+<h2>Lot - @Model.Lot.Name</h2>
+
+@if (Model.EndTime < DateTime.Now)
+{
+    if (Model.LastBet != null)
+    {
+        if (Model.LastBet.User.Email.Equals(User.Identity.Name))
+        {
+            <label>Hello, winner! <a href="#">Here</a> you can read more about receiving the goods.</label>
+        }
+        else
+        {
+            <label>The goods are sold.</label>
+        }
+    }
+    else
+    {
+        <label>The goods are not sold.</label>
+    }
+}
+
+<div class="thumbnail col-md-4 col-centered">
+    <h2 class="align-centered">@Html.DisplayFor(model => model.Lot.Name)</h2>
+    <img src="@img" class="img-responsive img-rounded" />
+    <div class="caption">
+
+        <p>@Html.DisplayFor(model => model.Lot.Description)</p>
+        <div class="row">
+            <h3 class="col-md-6 align-centered">@Html.DisplayNameFor(model => model.Lot.Price):</h3>
+            <h3 class="col-md-6 align-centered" data-bind="text: priceFormated"></h3>
+        </div>
+        <div class="row">
+            <h3 class="col-md-6 align-centered">@Html.DisplayNameFor(model => model.Lot.Time):</h3>
+            <h3 class="col-md-6 align-centered" data-bind="text: getTimeLeft"></h3>
+        </div>
+    </div>
+</div>
+
+<div class="thumbnail col-md-4 col-centered align-centered" id="bet-box">
+    <button class="btn btn-success" data-bind="click: makeBet" id="bet-btn">Make bet</button>
+    <label class="radio-inline"><input type="radio" data-bind="checked: factor" name="percentage" value="0,05" checked>5%</label>
+    <label class="radio-inline"><input type="radio" data-bind="checked: factor" name="percentage" value="0,1">10%</label>
+    <label class="radio-inline"><input type="radio" data-bind="checked: factor" name="percentage" value="0,2">20%</label>
+</div>
+
+<a href="@Url.Action("Index")" class="btn btn-info">
+    Back to list
+    <span class="glyphicon glyphicon-backward"></span>
+</a>
+@* ReSharper disable once Razor.SectionNotResolved *@
+@section Scripts{
+    <script>
+        window.model = {};
+        window.model.price = @price.ToString("F2", new CultureInfo("en-US"));
+        window.model.winLotId = @Model.WinLotId;
+        window.model.endDate = new Date("@Model.EndTime.ToString(dateFormat)");
+        window.model.startDate = new Date("@Model.StartTime.ToString(dateFormat)");
+        window.model.userEmail = "@User.Identity.Name";
+    </script>
+    <script src="~/Scripts/jquery.signalR-2.2.0.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    @Scripts.Render("~/bundles/auction")
+}

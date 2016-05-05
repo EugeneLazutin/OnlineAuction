@@ -1,0 +1,85 @@
+﻿@model IEnumerable<OnlineAuction.Entities.Lot>
+
+@{
+    ViewBag.Title = "Lots";
+}
+
+<h2>Available lots</h2>
+
+<p>
+    <a href="@Url.Action("Create")" class="btn btn-success">
+        Create
+        <span class="glyphicon glyphicon-asterisk"></span>
+    </a>
+</p>
+
+@if (Model == null || Model.Count() == 0)
+{
+    <span>There are no lots</span>
+}
+else
+{
+    <table class="table table-responsive">
+
+        @foreach (var item in Model)
+        {
+            string img;
+            if (item.Image == null)
+            {
+                img = "/Content/no_image.jpg";
+            }
+            else
+            {
+                img = $"data:image/gif;base64,{Convert.ToBase64String(item.Image)}";
+            }
+
+            <tr>
+                <td>
+                    <img src="@img" class="img-responsive img-rounded lot-img" />
+                </td>
+                <td>
+                    <p>
+                        <b class="col-md-4">@Html.DisplayNameFor(model => model.Name):</b>
+                        <span class="col-md-8">@Html.DisplayFor(modelItem => item.Name)</span>
+                    </p>
+                    <p>
+                        <b class="col-md-4">@Html.DisplayNameFor(model => model.Description):</b>
+                        <span class="col-md-8">@Html.DisplayFor(modelItem => item.Description)</span>
+                    </p>
+                    <p>
+                        <b class="col-md-4">@Html.DisplayNameFor(model => model.Price):</b>
+                        <span class="col-md-8">@Html.DisplayFor(modelItem => item.Price) $</span>
+                    </p>
+                    <p>
+                        <b class="col-md-4">@Html.DisplayNameFor(model => model.Time):</b>
+                        <span class="col-md-8">@Html.DisplayFor(modelItem => item.Time) min</span>
+                    </p>
+                </td>
+
+                <td>
+                    <div class="btn-group-vertical" role="group" aria-label="...">
+                        <a href="@Url.Action("Create","WinLot", new { id = item.LotId })" class="btn btn-success">
+                            For auction
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </a>
+                        <a href="@Url.Action("Edit", new {id = item.LotId})" class="btn btn-primary">
+                            Edit
+                            <span class="glyphicon glyphicon-edit"></span>
+                        </a>
+                        <a href="@Url.Action("Details", new {id = item.LotId})" class="btn btn-info">
+                            Details
+                            <span class="glyphicon glyphicon-zoom-in"></span>
+                        </a>
+                        <a href="@Url.Action("Delete", new {id = item.LotId})" class="btn btn-danger">
+                            Delete
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
+
+    </table>
+}
+
+

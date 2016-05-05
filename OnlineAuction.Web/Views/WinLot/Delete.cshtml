@@ -1,0 +1,72 @@
+﻿@model OnlineAuction.Entities.WinLot
+
+@{
+    ViewBag.Title = "Delete lot - " + Model.Lot.Name;
+
+    string img;
+
+    if (Model.Lot.Image == null)
+    {
+        img = "/Content/no_image.jpg";
+    }
+    else
+    {
+        img = $"data:image/gif;base64,{Convert.ToBase64String(Model.Lot.Image)}";
+    }
+}
+
+<h2>Delete lot - @Model.Lot.Name</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <hr />
+
+    <div class="thumbnail col-md-4 col-centered">
+        <h2 class="align-centered">@Html.DisplayFor(model => model.Lot.Name)</h2>
+        <img src="@img" class="img-responsive img-rounded" />
+        <div class="caption">
+
+            <p>@Html.DisplayFor(model => model.Lot.Description)</p>
+        </div>
+    </div>
+
+    <div class="form-actions no-color btn-group">
+        <a href="@Url.Action("Index")" class="btn btn-info">
+            Back to list
+            <span class="glyphicon glyphicon-backward"></span>
+        </a>
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm">
+            Delete
+        </button>
+    </div>
+
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <input type="submit" value="Delete" class="btn btn-danger hidden" data-toggle="confirmation" id="submitBtn" />
+    }
+</div>
+
+
+
+<div class="modal fade" id="confirm" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header modal-header-danger">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Deletion confirmation</h4>
+            </div>
+            <div class="modal-body">
+                Are you really sure you want to delete this cute lot?
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Oh, of course not!</button>
+                    <label type="button" class="btn btn-danger" for="submitBtn">Delete</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,93 @@
+﻿@model IEnumerable<OnlineAuction.Models.WinLotViewModel>
+
+@{
+    ViewBag.Title = "Auction";
+}
+
+<h2>Active lots</h2>
+
+@if (Model == null || Model.Count() == 0)
+{
+    <span>There are no available lots</span>
+}
+else
+{
+
+    <table class="table table-responsive">
+
+        @foreach (var item in Model)
+        {
+            var date = DateTime.Now;
+            string img;
+            if (item.Lot.Image == null)
+            {
+                img = "/Content/no_image.jpg";
+            }
+            else
+            {
+                img = $"data:image/gif;base64,{Convert.ToBase64String(item.Lot.Image)}";
+            }
+
+            <tr>
+                <td>
+                    <img src="@img" class="img-responsive img-rounded lot-img" />
+                </td>
+                <td>
+                    <p>
+                        <b class="col-md-4">@Html.DisplayNameFor(model => model.Lot.Name):</b>
+                        <span class="col-md-8">@Html.DisplayFor(modelItem => item.Lot.Name)</span>
+                    </p>
+                    <p>
+                        <b class="col-md-4">@Html.DisplayNameFor(model => model.Lot.Description):</b>
+                        <span class="col-md-8">@Html.DisplayFor(modelItem => item.Lot.Description)</span>
+                    </p>
+                    <p>
+                        <b class="col-md-4">@Html.DisplayNameFor(model => model.Lot.Price):</b>
+                        <span class="col-md-8">
+                            @(item.LastBet == null ? Html.DisplayFor(modelItem => item.Lot.Price) : Html.DisplayFor(modelItem => item.LastBet.Value)) $
+                        </span>
+                    </p>
+                    <p>
+                        <b class="col-md-4">@Html.DisplayNameFor(model => model.StartTime):</b>
+                        <span class="col-md-8">@Html.DisplayFor(modelItem => item.StartTime)</span>
+                    </p>
+                    <p>
+                        <b class="col-md-4">@Html.DisplayNameFor(model => model.EndTime):</b>
+                        <span class="col-md-8">@Html.DisplayFor(modelItem => item.EndTime)</span>
+                    </p>
+                    <p>
+                        <b class="col-md-4">Status:</b>
+                        @if (item.EndTime < date)
+                        {
+                            <span class="col-md-8 text-danger">finished</span>
+                        }
+                        else if (item.StartTime > date)
+                        {
+                            <span class="col-md-8 text-info">not started</span>
+                        }
+                        else
+                        {
+                            <span class="col-md-8 text-success">active</span>
+                        }
+                    </p>
+                </td>
+                <td>
+                    <div class="btn-group-vertical" role="group" aria-label="...">
+                        <a href="@Url.Action("Details", new {id = item.WinLotId})" class="btn btn-info">
+                            View
+                            <span class="glyphicon glyphicon-zoom-in"></span>
+                        </a>
+                        @if (User.IsInRole("admin"))
+                        {
+                            <a href="@Url.Action("Delete", new {id = item.WinLotId})" class="btn btn-danger">
+                                Delete
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </a>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+
+    </table>
+}
